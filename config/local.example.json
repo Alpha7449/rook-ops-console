@@ -1,0 +1,30 @@
+{
+  "//": "Copy to config/local.json and adjust paths for your machine. local.json is gitignored.",
+  "aiSystemRoot": "C:/Users/you/AI System",
+  "paths": {
+    "odysseusDir": "C:/Users/you/AI System/odysseus",
+    "chromaStartScript": "C:/Users/you/AI System/chroma-server/start-chroma.ps1",
+    "vtuberDir": "C:/Users/you/AI System/VTuber auto",
+    "obsExe": "C:/Program Files/obs-studio/bin/64bit/obs64.exe",
+    "n8nComposeFile": "C:/Users/you/AI System/automation/docker-compose.yml",
+    "outreachDir": "C:/Users/you/AI System/automation/outreach",
+    "emailDigestDir": "C:/Users/you/AI System/Vault/00-Inbox",
+    "ollamaExe": "ollama"
+  },
+  "services": {
+    "odysseusUrl": "http://127.0.0.1:7000",
+    "n8nUrl": "http://127.0.0.1:5678",
+    "ollamaUrl": "http://127.0.0.1:11434",
+    "chromaUrl": "http://127.0.0.1:8100",
+    "searxngUrl": "http://127.0.0.1:8088"
+  },
+  "chromaScheduledTask": "ChromaDB (AI System)",
+  "vtubeStudioSteamId": "1325860",
+  "n8nWorkflowNames": {
+    "emailTriage": "EmailTriageV1",
+    "outreachSender": "Outreach — Batch sender (manual approve)",
+    "outreachUnsub": "Outreach — Unsubscribe webhook",
+    "outreachWatcher": "Outreach — Unsubscribe reply watcher"
+  },
+  "vtsApiPort": 8001
+}

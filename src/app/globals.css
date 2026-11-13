@@ -1,0 +1,487 @@
+@import "tailwindcss";
+
+/* ── Rook design tokens (from the Claude Design "AI Workflows Console") ───── */
+:root {
+  --rk-bg: #f4f7fa;
+  --rk-panel: #fff;
+  --rk-inset: #f4f7fa;
+  --rk-bd: #dfe6ee;
+  --rk-bd2: #eef2f7;
+  --rk-hov: #f8fafc;
+  --rk-ink: #1f2f3f;
+  --rk-body: #43505d;
+  --rk-mut: #64707d;
+  --rk-faint: #8a97a5;
+  --rk-lt: #c4d0dd;
+  --rk-link: #3a608b;
+  --rk-link-hov: #2d4d72;
+  --rk-steel: #3a608b;
+  --rk-steel-hov: #2d4d72;
+  --rk-soft: #e8f0fa;
+  --rk-soft-fg: #2d4d72;
+  --rk-info-fg: #2d4d72;
+  --rk-ok-bg: #e3f2e8;
+  --rk-ok-fg: #1e6b3a;
+  --rk-warn-bg: #fdf3e0;
+  --rk-warn-fg: #7a5b1e;
+  --rk-warn-bd: #ecd9b0;
+  --rk-err-bg: #fbe5e4;
+  --rk-err-fg: #96322e;
+  --rk-err-bd: #f0c8c6;
+  --rk-run-bg: #e8f0fa;
+  --rk-run-fg: #2d4d72;
+  --rk-off-bg: #eef2f7;
+  --rk-off-fg: #64707d;
+  --rk-tog-off: #c4d0dd;
+  --rk-shadow: 0 1px 2px rgba(31, 47, 63, 0.06), 0 4px 16px rgba(31, 47, 63, 0.07);
+  --rk-shadow-panel: -8px 0 32px rgba(31, 47, 63, 0.18);
+  --rk-backdrop: rgba(31, 47, 63, 0.35);
+  --rk-side: #1f2f3f;
+  --rk-side-bd: #2d4d72;
+  --rk-side-mut: #c4d0dd;
+  --rk-spark: #5892d4;
+}
+
+html[data-rk-theme="dark"] {
+  --rk-bg: #10181f;
+  --rk-panel: #1a2530;
+  --rk-inset: #16202a;
+  --rk-bd: #2b3a49;
+  --rk-bd2: #243240;
+  --rk-hov: #202d3a;
+  --rk-ink: #eef4fa;
+  --rk-body: #c4d0dd;
+  --rk-mut: #93a3b3;
+  --rk-faint: #7a8a99;
+  --rk-lt: #4a5a6a;
+  --rk-link: #5892d4;
+  --rk-link-hov: #91c0f6;
+  --rk-steel-hov: #4a76a8;
+  --rk-soft: #24384f;
+  --rk-soft-fg: #a9c9ec;
+  --rk-info-fg: #a9c9ec;
+  --rk-ok-bg: #1c3527;
+  --rk-ok-fg: #7fd49c;
+  --rk-warn-bg: #3d3014;
+  --rk-warn-fg: #e6c479;
+  --rk-warn-bd: #5a4a22;
+  --rk-err-bg: #3f2222;
+  --rk-err-fg: #f1a09c;
+  --rk-err-bd: #5d3232;
+  --rk-run-bg: #24384f;
+  --rk-run-fg: #a9c9ec;
+  --rk-off-bg: #243240;
+  --rk-off-fg: #93a3b3;
+  --rk-tog-off: #3b4a59;
+  --rk-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.4);
+  --rk-shadow-panel: -8px 0 32px rgba(0, 0, 0, 0.55);
+  --rk-backdrop: rgba(5, 10, 15, 0.55);
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--rk-ink);
+  background: var(--rk-bg);
+  transition: background-color 0.15s;
+  font-size: 14px;
+}
+
+a {
+  color: var(--rk-link);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--rk-link-hov);
+  text-decoration: underline;
+}
+button,
+select,
+input,
+textarea {
+  font-family: inherit;
+}
+
+@keyframes rkpulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+@keyframes rkslide {
+  from {
+    transform: translateX(28px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes rkfade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.rk-frame {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+.rk-main {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+}
+.rk-content {
+  padding: 24px 32px 40px;
+  max-width: 1240px;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.rk-side {
+  width: 224px;
+  flex: none;
+  background: var(--rk-side);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.rk-side-brand {
+  padding: 16px;
+  border-bottom: 1px solid var(--rk-side-bd);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 17px;
+}
+.rk-side nav {
+  flex: 1;
+  padding: 8px;
+  overflow-y: auto;
+}
+.rk-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--rk-side-mut);
+  text-decoration: none;
+  margin-bottom: 2px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.rk-nav-item:hover {
+  background: var(--rk-side-bd);
+  color: #fff;
+  text-decoration: none;
+}
+.rk-nav-item.active {
+  background: var(--rk-steel);
+  color: #fff;
+}
+.rk-nav-head {
+  padding: 12px 12px 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64707d;
+}
+.rk-side-foot {
+  padding: 12px;
+  border-top: 1px solid var(--rk-side-bd);
+  font-size: 12px;
+  color: var(--rk-side-mut);
+}
+
+/* ── Cards / chips / stats ───────────────────────────────────────────────── */
+.rk-card {
+  background: var(--rk-panel);
+  border-radius: 10px;
+  box-shadow: var(--rk-shadow);
+}
+.rk-card-bd {
+  border: 1px solid var(--rk-bd);
+  overflow: hidden;
+}
+.rk-stat {
+  padding: 14px 16px;
+}
+.rk-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rk-faint);
+}
+.rk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.rk-chip.ok {
+  background: var(--rk-ok-bg);
+  color: var(--rk-ok-fg);
+}
+.rk-chip.warn {
+  background: var(--rk-warn-bg);
+  color: var(--rk-warn-fg);
+}
+.rk-chip.err {
+  background: var(--rk-err-bg);
+  color: var(--rk-err-fg);
+}
+.rk-chip.run {
+  background: var(--rk-run-bg);
+  color: var(--rk-run-fg);
+}
+.rk-chip.off {
+  background: var(--rk-off-bg);
+  color: var(--rk-off-fg);
+}
+.rk-chip.soft {
+  background: var(--rk-soft);
+  color: var(--rk-soft-fg);
+}
+.rk-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rk-info-fg);
+  animation: rkpulse 1.4s infinite;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.rk-btn {
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  border: 0;
+}
+.rk-btn.primary {
+  background: var(--rk-steel);
+  color: #fff;
+}
+.rk-btn.primary:hover {
+  background: var(--rk-steel-hov);
+}
+.rk-btn.ghost {
+  background: var(--rk-panel);
+  color: var(--rk-link);
+  border: 2px solid var(--rk-bd);
+}
+.rk-btn.ghost:hover {
+  border-color: var(--rk-link);
+}
+.rk-btn.danger {
+  background: var(--rk-panel);
+  color: var(--rk-err-fg);
+  border: 1px solid var(--rk-bd);
+}
+.rk-btn.danger:hover {
+  border-color: #b3413c;
+}
+.rk-btn.sm {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 7px;
+}
+.rk-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.rk-iconbtn {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rk-panel);
+  color: var(--rk-mut);
+  border: 2px solid var(--rk-bd);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.rk-iconbtn:hover {
+  border-color: var(--rk-link);
+  color: var(--rk-link);
+}
+
+/* ── Toggle ──────────────────────────────────────────────────────────────── */
+.rk-tog {
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--rk-tog-off);
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex: none;
+  border: 0;
+  padding: 0;
+}
+.rk-tog.on {
+  background: var(--rk-steel);
+}
+.rk-tog .knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(31, 47, 63, 0.3);
+  transition: left 0.15s;
+}
+.rk-tog.on .knob {
+  left: 16px;
+}
+.rk-tog.lg {
+  width: 38px;
+  height: 22px;
+}
+.rk-tog.lg .knob {
+  width: 18px;
+  height: 18px;
+}
+.rk-tog.lg.on .knob {
+  left: 18px;
+}
+.rk-tog:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+.rk-th {
+  background: var(--rk-inset);
+  text-align: left;
+  padding: 8px 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rk-mut);
+  border-bottom: 1px solid var(--rk-bd);
+  white-space: nowrap;
+}
+.rk-td {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--rk-bd2);
+}
+tr.rk-row:hover {
+  background: var(--rk-hov);
+}
+.rk-section-h {
+  font-size: 15px;
+  margin: 0;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--rk-bd);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+/* ── Drawers ─────────────────────────────────────────────────────────────── */
+.rk-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--rk-backdrop);
+  z-index: 50;
+  animation: rkfade 0.15s;
+}
+.rk-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--rk-panel);
+  z-index: 51;
+  box-shadow: var(--rk-shadow-panel);
+  display: flex;
+  flex-direction: column;
+  animation: rkslide 0.18s ease-out;
+}
+.rk-drawer-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--rk-bd);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rk-x {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--rk-bd);
+  background: var(--rk-panel);
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--rk-mut);
+  cursor: pointer;
+  flex: none;
+}
+.rk-x:hover {
+  border-color: var(--rk-link);
+  color: var(--rk-ink);
+}
+
+/* ── Forms ───────────────────────────────────────────────────────────────── */
+.rk-input,
+.rk-select {
+  border: 1px solid var(--rk-bd);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: var(--rk-ink);
+  background: var(--rk-panel);
+  width: 100%;
+}
+.rk-input:focus,
+.rk-select:focus {
+  outline: 2px solid var(--rk-spark);
+  outline-offset: 0;
+}
+
+/* ── Scrollbars (subtle, dark-aware) ─────────────────────────────────────── */
+.rk-main::-webkit-scrollbar,
+.rk-drawer ::-webkit-scrollbar {
+  width: 10px;
+}
+.rk-main::-webkit-scrollbar-thumb,
+.rk-drawer ::-webkit-scrollbar-thumb {
+  background: var(--rk-lt);
+  border-radius: 5px;
+}

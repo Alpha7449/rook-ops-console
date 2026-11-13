@@ -1,0 +1,148 @@
+// The registry: what this console controls. Adapter wiring lives in src/lib/adapters.
+// Machine-specific paths/URLs come from config/local.json — this file is generic shape + identity.
+import type { ServiceDef, WorkflowDef } from "./types";
+
+export const SERVICES: ServiceDef[] = [
+  {
+    id: "watchdog",
+    name: "Stack watchdog",
+    desc: "Self-heals ChromaDB / Ollama / Odysseus every 60s",
+    kind: "process",
+    gamingStop: true,
+    startOrder: 0,
+  },
+  {
+    id: "odysseus",
+    name: "Odysseus",
+    desc: "Agent workspace + Agent Network orchestration",
+    port: 7000,
+    kind: "process",
+    memHint: "~1 GB RAM",
+    gamingStop: true,
+    startOrder: 3,
+  },
+  {
+    id: "chroma",
+    name: "ChromaDB",
+    desc: "Vector store — Odysseus RAG + Vexa semantic memory",
+    port: 8100,
+    kind: "task",
+    memHint: "~400 MB RAM",
+    gamingStop: true,
+    startOrder: 1,
+  },
+  {
+    id: "ollama",
+    name: "Ollama",
+    desc: "Local models (qwen2.5:14b …) — the VRAM heavyweight",
+    port: 11434,
+    kind: "ollama",
+    memHint: "up to ~10 GB VRAM",
+    gamingStop: true,
+    startOrder: 2,
+  },
+  {
+    id: "n8n",
+    name: "n8n",
+    desc: "Automation hub (email triage, outreach) — Docker",
+    port: 5678,
+    kind: "docker",
+    memHint: "~300 MB RAM",
+    gamingStop: true,
+    startOrder: 4,
+  },
+  {
+    id: "searxng",
+    name: "SearXNG",
+    desc: "Private web search for agents — Docker",
+    port: 8088,
+    kind: "docker",
+    memHint: "~200 MB RAM",
+    gamingStop: true,
+    startOrder: 5,
+  },
+];
+
+export const WORKFLOWS: WorkflowDef[] = [
+  {
+    id: "email-triage",
+    name: "Email triage",
+    category: "Ops",
+    schedule: "On new mail",
+    kind: "n8n",
+    autonomyDefault: "auto",
+    pipeline: ["New mail", "Strip to text", "Ollama classify", "Route by category", "Daily digest note"],
+    needs: ["n8n", "ollama"],
+    description:
+      "IMAP → local qwen2.5:14b classification → digest note in the vault. Drafts only — nothing is ever auto-sent.",
+  },
+  {
+    id: "outreach-sender",
+    name: "Outreach batch sender",
+    category: "Sales",
+    schedule: "Manual approve",
+    kind: "n8n",
+    autonomyDefault: "review",
+    pipeline: ["Load campaign", "Drop suppressed/dupes", "Throttle 75s", "Human executes in n8n", "SMTP send + log"],
+    needs: ["n8n"],
+    description:
+      "Cold-email sender for Rook Systems. By design nothing sends until the workflow is executed by hand in n8n — the console links there, it will never grow a send button.",
+  },
+  {
+    id: "outreach-unsub",
+    name: "Outreach unsubscribe webhook",
+    category: "Sales",
+    schedule: "Always on",
+    kind: "n8n",
+    autonomyDefault: "auto",
+    pipeline: ["GET /webhook/unsub", "Verify HMAC", "Append suppression", "Confirmation page"],
+    needs: ["n8n"],
+  },
+  {
+    id: "outreach-watcher",
+    name: "Outreach reply watcher",
+    category: "Sales",
+    schedule: "Inbox poll",
+    kind: "n8n",
+    autonomyDefault: "auto",
+    pipeline: ["Watch inbox", "Detect 'unsubscribe'", "Append suppression"],
+    needs: ["n8n"],
+  },
+  {
+    id: "agent-network",
+    name: "Agent Network builds",
+    category: "Engineering",
+    schedule: "On demand",
+    kind: "odysseus",
+    autonomyDefault: "review",
+    pipeline: ["Ask", "Planner (gate)", "Developer", "UI", "Reviewer (gate)", "Docs"],
+    needs: ["odysseus", "ollama"],
+    description:
+      "Odysseus multi-agent pipeline with approval gates after Planner and Reviewer. Paused runs surface in the review queue here.",
+  },
+  {
+    id: "vexa-assistant",
+    name: "Vexa — day shift (assistant)",
+    category: "Ops",
+    schedule: "One-click",
+    kind: "launcher",
+    autonomyDefault: "review",
+    pipeline: ["ChromaDB", "Ollama", "VTube Studio", "OBS (optional)", "Vexa assistant"],
+    needs: ["chroma", "ollama"],
+    description: "Voice-driven Claude pairing with the Vexa avatar. Hold RIGHT CTRL to talk.",
+  },
+  {
+    id: "vexa-stream",
+    name: "Vexa — night shift (stream)",
+    category: "Content",
+    schedule: "One-click",
+    kind: "launcher",
+    autonomyDefault: "review",
+    pipeline: ["ChromaDB", "Ollama", "VTube Studio", "OBS", "Vexa stream"],
+    needs: ["chroma", "ollama"],
+    description: "The show: screen + chat → brain → TTS → Live2D. Output-only stream brain.",
+  },
+];
+
+export const workflowById = (id: string) => WORKFLOWS.find((w) => w.id === id);
+export const serviceById = (id: string) => SERVICES.find((s) => s.id === id);
